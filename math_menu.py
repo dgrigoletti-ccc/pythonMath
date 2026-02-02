@@ -59,7 +59,8 @@ def descriptive_stats():
 
 def main():
     while True:
-        print("\nMenu:")
+        print("\nMath Menu:")
+
         print("1. Fibonacci")
         print("2. Factorial")
         print("3. Multiplication Table")
