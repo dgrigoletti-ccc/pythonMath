@@ -1,5 +1,7 @@
 import math
 import statistics
+import io
+import contextlib
 
 def fibonacci(n):
     if n <= 0:
@@ -34,28 +36,75 @@ def trigonometry(angle_deg):
     print(f"cos({angle_deg}°) = {math.cos(angle_rad):.4f}")
     print(f"tan({angle_deg}°) = {math.tan(angle_rad):.4f}")
 
-def descriptive_stats():
-    values = []
-    for i in range(10):
-        val = float(input(f"Enter value {i+1}: "))
-        values.append(val)
-    mean = statistics.mean(values)
-    median = statistics.median(values)
-    try:
-        mode = statistics.mode(values)
-    except statistics.StatisticsError:
-        mode = "No unique mode"
-    stdev = statistics.stdev(values)
-    min_val = min(values)
-    max_val = max(values)
-    range_val = max_val - min_val
-    print(f"Mean: {mean:.2f}")
-    print(f"Median: {median:.2f}")
-    print(f"Mode: {mode}")
-    print(f"Standard Deviation: {stdev:.2f}")
-    print(f"Min: {min_val:.2f}")
-    print(f"Max: {max_val:.2f}")
-    print(f"Range: {range_val:.2f}")
+def descriptive_stats(values=None):
+    if values is None:
+        values = []
+        for i in range(10):
+            val = float(input(f"Enter value {i+1}: "))
+            values.append(val)
+        mean = statistics.mean(values)
+        median = statistics.median(values)
+        try:
+            mode = statistics.mode(values)
+        except statistics.StatisticsError:
+            mode = "No unique mode"
+        stdev = statistics.stdev(values)
+        min_val = min(values)
+        max_val = max(values)
+        range_val = max_val - min_val
+        print(f"Mean: {mean:.2f}")
+        print(f"Median: {median:.2f}")
+        print(f"Mode: {mode}")
+        print(f"Standard Deviation: {stdev:.2f}")
+        print(f"Min: {min_val:.2f}")
+        print(f"Max: {max_val:.2f}")
+        print(f"Range: {range_val:.2f}")
+    else:
+        # values provided by caller (e.g. GUI): compute and return a string
+        mean = statistics.mean(values)
+        median = statistics.median(values)
+        try:
+            mode = statistics.mode(values)
+        except statistics.StatisticsError:
+            mode = "No unique mode"
+        stdev = statistics.stdev(values) if len(values) > 1 else 0.0
+        min_val = min(values)
+        max_val = max(values)
+        range_val = max_val - min_val
+        out = []
+        out.append(f"Mean: {mean:.2f}")
+        out.append(f"Median: {median:.2f}")
+        out.append(f"Mode: {mode}")
+        out.append(f"Standard Deviation: {stdev:.2f}")
+        out.append(f"Min: {min_val:.2f}")
+        out.append(f"Max: {max_val:.2f}")
+        out.append(f"Range: {range_val:.2f}")
+        return "\n".join(out)
+
+# Helpers to capture printed output from the existing functions for the GUI
+def _capture_output(func, *args, **kwargs):
+    f = io.StringIO()
+    with contextlib.redirect_stdout(f):
+        func(*args, **kwargs)
+    return f.getvalue()
+
+def get_fibonacci(n):
+    return _capture_output(fibonacci, n)
+
+def get_factorial(n):
+    return _capture_output(factorial, n)
+
+def get_multiplication_table(n):
+    return _capture_output(multiplication_table, n)
+
+def get_exponentiation_table(base, exp):
+    return _capture_output(exponentiation_table, base, exp)
+
+def get_trigonometry(angle_deg):
+    return _capture_output(trigonometry, angle_deg)
+
+def get_descriptive_stats_from_values(values):
+    return descriptive_stats(values)
 
 def main():
     while True:
